@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres
+    restart: always
+    env_file:
+      - ./.env
+    healthcheck:
+      test: [ “CMD-SHELL”, “pg_isready” ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  server:
+    build: ./server
+    container_name: server_container
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.env
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redisData:/data
+  web:
+    build: ./web
+    container_name: web_container
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    ports:
+      - 5173:5173
+    depends_on:
+      - server
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+volumes:
+  pgdata:
+  redisData:
