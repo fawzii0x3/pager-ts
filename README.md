@@ -8,7 +8,8 @@ and setup the configuration
 ```bash
 docker-compose up -d
 ```
- -d : to run on detach mode 
+ -d : to run on detach mode
+ 
 ⚠️ when adding new dependency run  
 ```bash
 docker-compose up -d --build
