@@ -1,8 +1,6 @@
 import { DataSource } from "typeorm";
-import User from "./entities/User";
 import { config } from "dotenv";
 import entities from "./entities";
-
 
 config();
 const AppDataSource = new DataSource({
@@ -17,4 +15,4 @@ const AppDataSource = new DataSource({
   entities: entities,
 });
 
-export default AppDataSource
+export default AppDataSource;

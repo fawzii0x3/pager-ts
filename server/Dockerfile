@@ -1,4 +1,4 @@
-FROM node:19
+FROM node:18
 
 # SET WORK DIRECTORY
 WORKDIR /app/
@@ -15,7 +15,9 @@ RUN yarn
 COPY . .
 
 
-EXPOSE ${SERVER_PORT}
 
-# Start the React app
+# Start the node server
 CMD ["yarn", "dev"]
+
+
+EXPOSE ${SERVER_PORT}
