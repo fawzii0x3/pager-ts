@@ -1,28 +1,31 @@
-import { useEffect } from "react";
-import "./App.css";
-import { useUsersQuery, useCreateUserMutation } from "./gql/graphql";
+import { useState } from "react";
+import "./App.scss";
+import { useLoginMutation, useMeUserQuery } from "./gql/graphql";
+
 
 function App() {
-  const [fullInfo, reloadUsersQuery] = useUsersQuery();
-  console.log(fullInfo);
-  const [data, ror] = useCreateUserMutation();
-  useEffect(() => {
-    async () => {
-      await ror({
-        data: {
-          age: 40,
-          firstName: "mohamed",
-          lastName: "ben chikha",
-        },
-      });
-    };
-  }, []);
-
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const [,Login] = useLoginMutation()
+  const [data,] = useMeUserQuery()
+console.log(data)
+  const ChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
   return (
-    <form>
-      <input type="text" />
-      <input type="text" />
-      <input type="text" />
+    <form
+      onSubmit={async(e) => {
+        e.preventDefault();
+        const res = await Login({data:form})
+        console.log(res)
+      }}
+    >
+      <input type="email" name="email" onChange={ChangeHandler} />
+      <input type="password" name="password" onChange={ChangeHandler} />
+      <button>submit</button>
     </form>
   );
 }

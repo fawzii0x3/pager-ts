@@ -1,8 +1,7 @@
 query Users {
   Users {
     id
-    firstName
-    lastName
-    age
+    name
+    email
   }
 }

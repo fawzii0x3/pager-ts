@@ -33,11 +33,11 @@ async function main() {
     await apolloServer.start();
     app.use(
       "/api",
-      cors({ origin: "*" }),
+      cors({ origin: "http://localhost:5173", credentials: true }),
       express.json(),
       expressMiddleware(apolloServer, {
         context: async ({ req, res }) => {
-          return { req, res,  db };
+          return { req, res, db };
         },
       })
     );

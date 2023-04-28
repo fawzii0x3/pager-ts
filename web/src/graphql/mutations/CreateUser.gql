@@ -1,8 +1,0 @@
-mutation CreateUser($data: UserInput!) {
-  createUser(data: $data) {
-    id
-    firstName
-    lastName
-    age
-  }
-}

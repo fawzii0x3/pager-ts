@@ -15,33 +15,33 @@ export type Scalars = {
   Float: number;
 };
 
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createUser: User;
-  updateUser: User;
+  login: UserResponse;
+  register?: Maybe<UserResponse>;
 };
 
 
-export type MutationCreateUserArgs = {
-  data: UserInput;
+export type MutationLoginArgs = {
+  data: UserLoginInput;
 };
 
 
-export type MutationUpdateUserArgs = {
-  data: UserInput;
-  id: Scalars['Float'];
+export type MutationRegisterArgs = {
+  data: UserRegisterInput;
 };
 
 export type Query = {
   __typename?: 'Query';
+  MeUser: UserResponse;
   Users: Array<User>;
-  deleteUser: Scalars['Boolean'];
   user?: Maybe<User>;
-};
-
-
-export type QueryDeleteUserArgs = {
-  id: Scalars['Float'];
 };
 
 
@@ -51,52 +51,136 @@ export type QueryUserArgs = {
 
 export type User = {
   __typename?: 'User';
-  age: Scalars['Int'];
-  firstName: Scalars['String'];
+  email: Scalars['String'];
   id: Scalars['Int'];
-  lastName: Scalars['String'];
+  name: Scalars['String'];
 };
 
-export type UserInput = {
-  age: Scalars['Float'];
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
+export type UserLoginInput = {
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
-export type CreateUserMutationVariables = Exact<{
-  data: UserInput;
+export type UserRegisterInput = {
+  email: Scalars['String'];
+  name: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  user?: Maybe<User>;
+};
+
+export type LoginMutationVariables = Exact<{
+  data: UserLoginInput;
 }>;
 
 
-export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'User', id: number, firstName: string, lastName: string, age: number } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, name: string, email: string } | null } };
+
+export type RegisterMutationVariables = Exact<{
+  data: UserRegisterInput;
+}>;
+
+
+export type RegisterMutation = { __typename?: 'Mutation', register?: { __typename?: 'UserResponse', user?: { __typename?: 'User', id: number, name: string, email: string } | null, errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null } | null };
+
+export type MeUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeUserQuery = { __typename?: 'Query', MeUser: { __typename?: 'UserResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, name: string, email: string } | null } };
+
+export type UserByIdQueryVariables = Exact<{
+  userId: Scalars['Int'];
+}>;
+
+
+export type UserByIdQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, name: string, email: string } | null };
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type UsersQuery = { __typename?: 'Query', Users: Array<{ __typename?: 'User', id: number, firstName: string, lastName: string, age: number }> };
+export type UsersQuery = { __typename?: 'Query', Users: Array<{ __typename?: 'User', id: number, name: string, email: string }> };
 
 
-export const CreateUserDocument = gql`
-    mutation CreateUser($data: UserInput!) {
-  createUser(data: $data) {
-    id
-    firstName
-    lastName
-    age
+export const LoginDocument = gql`
+    mutation Login($data: UserLoginInput!) {
+  login(data: $data) {
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      name
+      email
+    }
   }
 }
     `;
 
-export function useCreateUserMutation() {
-  return Urql.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument);
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
+export const RegisterDocument = gql`
+    mutation Register($data: UserRegisterInput!) {
+  register(data: $data) {
+    user {
+      id
+      name
+      email
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
+    `;
+
+export function useRegisterMutation() {
+  return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const MeUserDocument = gql`
+    query MeUser {
+  MeUser {
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      name
+      email
+    }
+  }
+}
+    `;
+
+export function useMeUserQuery(options?: Omit<Urql.UseQueryArgs<MeUserQueryVariables>, 'query'>) {
+  return Urql.useQuery<MeUserQuery, MeUserQueryVariables>({ query: MeUserDocument, ...options });
+};
+export const UserByIdDocument = gql`
+    query UserById($userId: Int!) {
+  user(id: $userId) {
+    id
+    name
+    email
+  }
+}
+    `;
+
+export function useUserByIdQuery(options: Omit<Urql.UseQueryArgs<UserByIdQueryVariables>, 'query'>) {
+  return Urql.useQuery<UserByIdQuery, UserByIdQueryVariables>({ query: UserByIdDocument, ...options });
 };
 export const UsersDocument = gql`
     query Users {
   Users {
     id
-    firstName
-    lastName
-    age
+    name
+    email
   }
 }
     `;
