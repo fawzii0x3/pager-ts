@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { Provider, createClient, fetchExchange } from "urql";
 import { cacheExchange } from "@urql/exchange-graphcache";
-import { LoginMutation, MeUserDocument } from "./gql/graphql.tsx";
+import { LoginMutation, LogoutMutation, MeUserDocument, MeUserQuery } from "./gql/graphql.tsx";
 import { RegisterMutation } from "./gql/graphql.tsx";
 import betterUpdateQuery from "./utils/BetterUpdateQuery.ts";
 
@@ -15,6 +15,16 @@ const client = createClient({
     cacheExchange({
       updates: {
         Mutation: {
+          logout: (_result, args, cache, info) => {
+            betterUpdateQuery<LogoutMutation, MeUserQuery>(
+              cache,
+              { query: MeUserDocument },
+              _result,
+              () => {
+                return {MeUser:null}
+              }
+            );
+          },
           login: (_result, args, cache, info) => {
             betterUpdateQuery<LoginMutation, any>(
               cache,
