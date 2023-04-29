@@ -10,7 +10,7 @@ function App() {
   });
   const [,Login] = useLoginMutation()
   const [data,] = useMeUserQuery()
-console.log(data)
+
   const ChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -26,6 +26,7 @@ console.log(data)
       <input type="email" name="email" onChange={ChangeHandler} />
       <input type="password" name="password" onChange={ChangeHandler} />
       <button>submit</button>
+      {/* <p>{data?.data?.MeUser?.user?.name ?? "hello"}</p> */}
     </form>
   );
 }

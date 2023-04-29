@@ -12,23 +12,39 @@ import { buildSchema } from "type-graphql";
 import session from "express-session";
 import { redisClient } from "./redis";
 import mySession from "./mySession";
-
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
 dotenv.config();
 
 const PORT = process.env.SERVER_PORT;
 
 const app = express();
 const httpServer = http.createServer(app);
-
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: "/api",
+});
 async function main() {
   try {
-    db.initialize();
+    await db.initialize();
     await redisClient.connect();
     app.use(session(mySession));
     const schema = await buildSchema({ resolvers, validate: false });
+    const serverCleanup = useServer({ schema }, wsServer);
     const apolloServer = new ApolloServer({
       schema,
-      plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+      plugins: [
+        ApolloServerPluginDrainHttpServer({ httpServer }),
+        {
+          async serverWillStart() {
+            return {
+              async drainServer() {
+                await serverCleanup.dispose();
+              },
+            };
+          },
+        },
+      ],
     });
     await apolloServer.start();
     app.use(
